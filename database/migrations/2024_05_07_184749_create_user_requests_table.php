@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('payee', 512)->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->string('type', 32)->nullable();
-            $table->string('bench', 32)->nullable();
+            $table->string('bank', 32)->nullable();
             $table->string('card', 256)->nullable();
             $table->string('account', 256)->nullable();
             $table->string('branch', 512)->nullable();
