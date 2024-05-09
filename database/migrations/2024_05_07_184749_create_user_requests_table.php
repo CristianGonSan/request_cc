@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('branch', 512)->nullable();
             $table->string('reference', 512)->nullable();
             $table->string('covenant', 512)->nullable();
-            $table->boolean('accepted');
+            $table->boolean('accepted')->default(false);
 
             $table->foreign('user_id')
                 ->references('id')
