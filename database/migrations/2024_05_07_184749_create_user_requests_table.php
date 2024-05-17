@@ -27,14 +27,15 @@ return new class extends Migration
             $table->string('branch', 512)->nullable();
             $table->string('reference', 512)->nullable();
             $table->string('covenant', 512)->nullable();
-            $table->boolean('accepted')->default(false);
+            $table->string('note')->nullable();
+            $table->tinyInteger('status')->default(0);
+
+            $table->timestamps();
 
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
-                ->onDelete('set null'); // Acción en caso de eliminación del usuario
-
-            $table->timestamps(); // Agregar campos created_at y updated_at
+                ->onDelete('set null');
         });
     }
 

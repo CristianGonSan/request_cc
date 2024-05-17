@@ -2,31 +2,24 @@
 
 @section('content')
     <div class="container">
-        <div class="row row-cols-1 row-cols-md-4 justify-content-center">
+        <div class="card">
 
-            @include('layouts.cards.text-card', [
-                'route' => route('requests.create'),
-                'header' => 'Solicitud',
-                'title' => 'Nueva Solicitud',
-                'text' => 'Llene el formulario realizar una nueva solicitud de Centros de Costos'
-            ])
+            <div class="card-header">
+                <a href="{{ route('requests.create') }}" class="btn btn-primary">
+                    Nueva Solicitud
+                </a>
+            </div>
 
-            @if( Auth::user()->is_admin)
-                @include('layouts.cards.text-card', [
-                'route' => route('users.index'),
-                'header' => 'Usuarios',
-                'title' => 'Gestión de Usuarios',
-                'text' => 'Gestione a los usuarios para que puedan acceder.'
-                ])
+            <div class="card-body">
 
-                @include('layouts.cards.text-card', [
-                'route' => route('requests.index'),
-                'header' => 'Solicitudes',
-                'title' => 'Gestión de Solicitudes',
-                'text' => 'Gestione las solicitudes.'
-                ])
-            @endif
+                @foreach($requests as $request)
+                    @include('requests.card', $request)
+                @endforeach
+            </div>
 
+            <div class="card-footer d-flex justify-content-center">
+                {{ $requests->links() }}
+            </div>
         </div>
     </div>
 @endsection

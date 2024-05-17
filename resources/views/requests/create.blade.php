@@ -31,7 +31,8 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="amount" class="form-label">Importe</label>
-                                <input type="number" class="form-control" name="amount" value="" required>
+                                <label for="amount" class="form-label">Importe</label>
+                                <input type="number" class="form-control" step="0.01" name="amount" id="amount" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="type_of_movement" class="form-label">Tipo de movimiento</label>

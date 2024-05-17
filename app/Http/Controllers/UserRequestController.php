@@ -13,12 +13,42 @@ class UserRequestController extends Controller
 {
     public function index()
     {
-        $requests = UserRequest::select('user_requests.*', 'users.name as user_name')
+        $requests = UserRequest::select(['user_requests.*', 'users.name as user_name'])
             ->join('users', 'user_requests.user_id', '=', 'users.id')
-            ->get();
+            ->orderBy('user_requests.created_at', 'desc') // Ordenar por fecha de creación en orden descendente
+            ->paginate(10);
 
         return view('requests.index', compact('requests'));
     }
+
+    public function user_home()
+    {
+        $requests = UserRequest::select(['user_requests.*', 'users.name as user_name'])
+            ->join('users', 'user_requests.user_id', '=', 'users.id')
+            ->orderBy('user_requests.created_at', 'desc')
+            ->where('user_id', Auth::user()->id)
+            ->paginate(10);
+
+        return view('home', compact('requests'));
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = UserRequest::select(['user_requests.*', 'users.name as user_name'])
+            ->join('users', 'user_requests.user_id', '=', 'users.id')
+            ->orderBy('user_requests.created_at', 'desc');
+
+        if (isset($search)) {
+            $query->where('user_requests.concept', 'LIKE', '%' . $search . '%');
+        }
+
+        $requests = $query->paginate(10);
+
+        return view('requests.index', compact('requests', 'search'));
+    }
+
 
     public function create()
     {
@@ -39,11 +69,6 @@ class UserRequestController extends Controller
         Session::flash('message', 'Solicitud creada correctamente');
         Session::flash('type', 'success');
 
-        if (Auth::user()->is_admin) {
-            return redirect()->route('requests.index')
-                ->with('success', 'Solicitud creada exitosamente.');
-        }
-
         return redirect()->route('home')
             ->with('success', 'Solicitud creada exitosamente.');
     }
@@ -57,6 +82,13 @@ class UserRequestController extends Controller
     public function edit($id)
     {
         $request = UserRequest::findOrFail($id);
+
+        // Verificar si el usuario autenticado es el creador de la solicitud o es un administrador
+        if ($request->user_id !== Auth::id() && !Auth::user()->is_admin) {
+            // Si el usuario no es el creador de la solicitud y tampoco es administrador, redirigir o mostrar un mensaje de error
+            return redirect()->back()->with('error', 'No tienes permiso para editar esta solicitud.');
+        }
+
         return view('requests.edit', compact('request'));
     }
 
@@ -69,7 +101,7 @@ class UserRequestController extends Controller
         $userRequest = UserRequest::findOrFail($id);
         $userRequest->update($request->all());
 
-        return redirect()->route('requests.index')
+        return redirect()->back()
             ->with('success', 'Solicitud actualizada exitosamente.');
     }
 
@@ -78,18 +110,38 @@ class UserRequestController extends Controller
         $userRequest = UserRequest::findOrFail($id);
         $userRequest->delete();
 
-        return redirect()->route('requests.index')
+        return redirect()->back()
             ->with('success', 'Solicitud eliminada exitosamente.');
     }
 
     public function accept($id)
     {
         $userRequest = UserRequest::findOrFail($id);
-        $userRequest->accepted = 1;
+        $userRequest->status = 1;
         $userRequest->save();
 
-        return redirect()->route('requests.index')
+        return redirect()->back()
             ->with('success', 'Solicitud actualizada exitosamente.');
+    }
+
+    public function decline($id)
+    {
+        $userRequest = UserRequest::findOrFail($id);
+        $userRequest->status = 2;
+        $userRequest->save();
+
+        return redirect()->back()
+            ->with('success', 'Solicitud actualizada exitosamente.');
+    }
+
+    public function note(Request $request, $id)
+    {
+        $userRequest = UserRequest::findOrFail($id);
+        $userRequest->note = $request->input('note');
+        $userRequest->save();
+
+        return redirect()->back()
+            ->with('success', 'Nota actualizada exitosamente.');
     }
 
     public function report()

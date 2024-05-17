@@ -13,6 +13,8 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+    <link rel="icon" type="image/png" href="{{ asset('img/icons/codias-icon.png') }}">
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -32,7 +34,19 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
-
+                    @auth
+                        @if( Auth::user()->is_admin )
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('users.index') }}">Usuarios</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('requests.index') }}">Solicitudes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('requests.report') }}">Generar Reporte</a>
+                            </li>
+                        @endif
+                    @endauth
                 </ul>
 
                 <!-- Right Side Of Navbar -->

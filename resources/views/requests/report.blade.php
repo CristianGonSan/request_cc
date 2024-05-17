@@ -71,14 +71,28 @@
                                 </div>
                             </div>
 
-                            <!-- Solo Aceptados -->
                             <div class="row mb-3">
-                                <label for="accepted" class="col-md-4 col-form-label text-md-end">{{ __('') }}</label>
+                                <label for="payee" class="col-md-4 col-form-label text-md-end">{{ __('Titular') }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="accepted" type="checkbox" class="form-check-input" name="accepted">
+                                    <input id="payee" type="text" class="form-control @error('payee') is-invalid @enderror" name="payee" value="{{ old('payee') }}" autofocus>
 
-                                    <label class="form-check-label" for="accepted">
+                                    @error('payee')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Solo Aceptados -->
+                            <div class="row mb-3">
+                                <label for="status" class="col-md-4 col-form-label text-md-end">{{ __('') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="status" type="checkbox" class="form-check-input" name="status">
+
+                                    <label class="form-check-label" for="status">
                                         {{ __('Mostrar solo los aceptados') }}
                                     </label>
                                 </div>

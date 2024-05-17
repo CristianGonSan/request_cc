@@ -5,7 +5,6 @@ namespace App\Http\exports;
 use App\Models\UserRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -19,21 +18,27 @@ class UserRequestExport implements FromCollection, WithHeadings
         $filters = request()->query();
 
         $query = UserRequest::select(
-            DB::raw("DATE_FORMAT(user_requests.created_at, '%d-%m-%Y') as formatted_created_at"),
-            'users.name as user_name',
-            'user_requests.concept',
-            'user_requests.cost_center',
-            'user_requests.payee',
-            'user_requests.amount',
-            'user_requests.type',
-            'user_requests.bank',
-            'user_requests.card',
-            'user_requests.account',
-            'user_requests.branch',
-            'user_requests.reference',
-            'user_requests.covenant',
-            'user_requests.accepted',
-            DB::raw("CASE WHEN user_requests.accepted = 1 THEN 'Aceptado' ELSE 'Pendiente' END as accepted")
+            ['user_requests.request_id',
+                DB::raw("DATE_FORMAT(user_requests.created_at, '%d-%m-%Y') as formatted_created_at"),
+                'users.name as user_name',
+                'user_requests.concept',
+                'user_requests.cost_center',
+                'user_requests.payee',
+                'user_requests.amount',
+                'user_requests.type',
+                'user_requests.bank',
+                'user_requests.card',
+                'user_requests.account',
+                'user_requests.branch',
+                'user_requests.reference',
+                'user_requests.covenant',
+                'user_requests.status',
+                DB::raw("CASE
+                        WHEN user_requests.status = 1 THEN 'Aceptado'
+                        WHEN user_requests.status = 2 THEN 'Rechazado'
+                        ELSE 'Pendiente'
+                        END as status"),
+                'user_requests.note']
         )->join('users', 'user_requests.user_id', '=', 'users.id');
 
         if (!empty($filters)) {
@@ -53,8 +58,12 @@ class UserRequestExport implements FromCollection, WithHeadings
                 $query->where('users.name', 'LIKE', '%' . $filters['user'] . '%');
             }
 
-            if (isset($filters['accepted'])) {
-                $query->where('user_requests.accepted', 1);
+            if (isset($filters['payee'])) {
+                $query->where('user_requests.payee', 'LIKE', '%' . $filters['payee'] . '%');
+            }
+
+            if (isset($filters['status'])) {
+                $query->where('user_requests.status', 1);
             }
         }
 
@@ -64,6 +73,7 @@ class UserRequestExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
+            'No.',
             'Fecha',
             'Solicita',
             'Concepto',
@@ -77,7 +87,8 @@ class UserRequestExport implements FromCollection, WithHeadings
             'Sucursal',
             'Referencia',
             'Convenio',
-            'Estado'
+            'Estado',
+            'Nota'
             // Agrega más columnas según sea necesario
         ];
     }
