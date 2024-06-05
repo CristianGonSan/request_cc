@@ -38,10 +38,15 @@
                                 <input type="number" class="form-control" name="amount" required
                                        value="{{ $request['amount'] }}">
                             </div>
+
                             <div class="col-md-6">
                                 <label for="type_of_movement" class="form-label">Tipo de movimiento</label>
-                                <input type="text" class="form-control" name="type" value="{{ $request['type'] }}">
+                                <select class="form-select" name="type">
+                                    <option value="Empresario" {{ $request['type'] === 'Empresario' ? 'selected' : '' }}>Empresario</option>
+                                    <option value="Personal" {{ $request['type'] === 'Personal' ? 'selected' : '' }}>Personal</option>
+                                </select>
                             </div>
+
                             <div class="col-md-3">
                                 <label for="bench" class="form-label">Banco</label>
                                 <input type="text" class="form-control" name="bank" value="{{ $request['bank'] }}">

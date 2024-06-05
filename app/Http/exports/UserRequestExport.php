@@ -28,7 +28,7 @@ class UserRequestExport implements FromCollection, WithHeadings
                 'user_requests.type',
                 'user_requests.bank',
                 'user_requests.card',
-                'user_requests.account',
+                DB::raw("CAST(user_requests.account AS CHAR) as account"),
                 'user_requests.branch',
                 'user_requests.reference',
                 'user_requests.covenant',
@@ -62,8 +62,16 @@ class UserRequestExport implements FromCollection, WithHeadings
                 $query->where('user_requests.payee', 'LIKE', '%' . $filters['payee'] . '%');
             }
 
-            if (isset($filters['status'])) {
+            if (isset($filters['accepted'])) {
                 $query->where('user_requests.status', 1);
+            }
+
+            if (isset($filters['refused'])) {
+                $query->where('user_requests.status', 2);
+            }
+
+            if (isset($filters['pending'])) {
+                $query->where('user_requests.status', 0);
             }
         }
 

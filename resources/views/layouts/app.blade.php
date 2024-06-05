@@ -16,7 +16,12 @@
     <link rel="icon" type="image/png" href="{{ asset('img/icons/codias-icon.png') }}">
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @if( config('app.env') == 'production' )
+        <link rel="stylesheet" href="{{ asset('build/assets/app-G_fqdYwI.css') }}"/>
+        <script type="module" src="{{ asset('build/assets/app-CI1Bgkaz.js') }}"></script>
+    @else
+        @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @endif
 </head>
 <body>
 <div id="app">
@@ -82,13 +87,29 @@
             </div>
         </div>
     </nav>
-    @if(Session::has('message'))
-        <div class="alert alert-{{ Session::get('type') }}">
-            {{ Session::get('message') }}
+
+    @if ( session('success') )
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if ( session('error') )
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
     <main class="py-2">
-
         @yield('content')
     </main>
 </div>

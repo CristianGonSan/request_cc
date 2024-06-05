@@ -7,7 +7,7 @@
                 <form action="{{ route('requests.search') }}" method="GET">
                     <div class="input-group">
                         <input type="text" class="form-control" name="search" value="{{$search ?? ''}}"
-                               placeholder="Buscar por concepto...">
+                               placeholder="Buscar...">
                         <button class="btn btn-success" type="submit"><i class="fa fa-search"></i></button>
                     </div>
                 </form>

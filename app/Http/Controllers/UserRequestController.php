@@ -6,8 +6,8 @@ use App\Http\exports\UserRequestExport;
 use App\Models\UserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Exception;
 
 class UserRequestController extends Controller
 {
@@ -41,7 +41,12 @@ class UserRequestController extends Controller
             ->orderBy('user_requests.created_at', 'desc');
 
         if (isset($search)) {
-            $query->where('user_requests.concept', 'LIKE', '%' . $search . '%');
+            $query->where(function($q) use ($search) {
+                $q->where('user_requests.cost_center', 'LIKE', '%' . $search . '%')
+                    ->orWhere('user_requests.payee', 'LIKE', '%' . $search . '%')
+                    ->orWhere('users.name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('user_requests.concept', 'LIKE', '%' . $search . '%');
+            });
         }
 
         $requests = $query->paginate(10);
@@ -63,11 +68,9 @@ class UserRequestController extends Controller
 
         $userRequest = new UserRequest($request->all());
         $userRequest->user_id = Auth::id(); // Asignar el ID del usuario
+        $userRequest->bank = $request->bank;
 
         $userRequest->save();
-
-        Session::flash('message', 'Solicitud creada correctamente');
-        Session::flash('type', 'success');
 
         return redirect()->route('home')
             ->with('success', 'Solicitud creada exitosamente.');
@@ -99,14 +102,32 @@ class UserRequestController extends Controller
         ]);
 
         $userRequest = UserRequest::findOrFail($id);
-        $userRequest->update($request->all());
 
-        return redirect()->back()
+        if ($userRequest->user_id !== Auth::id() && !Auth::user()->is_admin) {
+            // Si el usuario no es el creador de la solicitud y tampoco es administrador, redirigir o mostrar un mensaje de error
+            return redirect()->back()->with('error', 'No tienes permiso para editar esta solicitud.');
+        }
+
+        if ($userRequest->status != 0) {
+            return redirect()->back()->with('error', 'La solicitud ya no se puede modificar.');
+        }
+
+        $userRequest->update($request->all());
+        $userRequest->bank = $request->bank;
+
+        $userRequest->save();
+
+        return redirect()->route('home')
             ->with('success', 'Solicitud actualizada exitosamente.');
     }
 
     public function destroy($id)
     {
+        if ($id == Auth::id() && !Auth::user()->is_admin) {
+            // Si el usuario no es el creador de la solicitud y tampoco es administrador, redirigir o mostrar un mensaje de error
+            return redirect()->back()->with('error', 'No tienes permiso para editar esta solicitud.');
+        }
+
         $userRequest = UserRequest::findOrFail($id);
         $userRequest->delete();
 
@@ -149,6 +170,10 @@ class UserRequestController extends Controller
         return view('requests.report');
     }
 
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
     public function export()
     {
         return Excel::download(new UserRequestExport(), 'Solicitudes.xlsx');

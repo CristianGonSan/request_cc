@@ -90,10 +90,34 @@
                                 <label for="status" class="col-md-4 col-form-label text-md-end">{{ __('') }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="status" type="checkbox" class="form-check-input" name="status">
+                                    <input id="status" type="checkbox" class="form-check-input" name="accepted">
 
-                                    <label class="form-check-label" for="status">
+                                    <label class="form-check-label" for="accepted">
                                         {{ __('Mostrar solo los aceptados') }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="status" class="col-md-4 col-form-label text-md-end">{{ __('') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="status" type="checkbox" class="form-check-input" name="refused">
+
+                                    <label class="form-check-label" for="refused">
+                                        {{ __('Mostrar solo los rechazados') }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="status" class="col-md-4 col-form-label text-md-end">{{ __('') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="status" type="checkbox" class="form-check-input" name="pending">
+
+                                    <label class="form-check-label" for="pending">
+                                        {{ __('Mostrar solo los pendientes') }}
                                     </label>
                                 </div>
                             </div>

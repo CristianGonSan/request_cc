@@ -3,15 +3,13 @@
 @section('content')
     <div class="container">
         <div class="card">
-
             <div class="card-header">
                 <a href="{{ route('requests.create') }}" class="btn btn-primary">
-                    Nueva Solicitud
+                    <i class="fa-solid fa-plus"></i> Nueva Solicitud
                 </a>
             </div>
 
             <div class="card-body">
-
                 @foreach($requests as $request)
                     @include('requests.card', $request)
                 @endforeach
@@ -23,4 +21,3 @@
         </div>
     </div>
 @endsection
-

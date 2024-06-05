@@ -1,0 +1,10 @@
+php artisan key:generate
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan db:seed --class=AdminUserSeeder
+
+chmod -R 775 storage
+chmod -R 775 bootstrap/cache

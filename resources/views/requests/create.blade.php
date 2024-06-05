@@ -31,7 +31,6 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="amount" class="form-label">Importe</label>
-                                <label for="amount" class="form-label">Importe</label>
                                 <input type="number" class="form-control" step="0.01" name="amount" id="amount" required>
                             </div>
                             <div class="col-md-6">

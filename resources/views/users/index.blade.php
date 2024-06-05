@@ -10,7 +10,7 @@
 
             <div class="card-body">
                 <a href="{{ route('users.create') }}" class="btn btn-primary">
-                    Crear Nuevo Usuario
+                    <i class="fa-solid fa-plus"></i> Crear Nuevo Usuario
                 </a>
 
                 <table id="miTabla">
